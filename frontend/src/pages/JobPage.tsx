@@ -531,7 +531,7 @@ function ResultView({ job }: { job: JobResponse }) {
         </Card>
       )}
 
-      {/* Tabs: Review / Downloads / Source files */}
+      {/* Tabs: Review / Source files / Downloads */}
       <Tabs
         defaultValue="review"
         onValueChange={(v) => {
@@ -541,18 +541,44 @@ function ResultView({ job }: { job: JobResponse }) {
       >
         <TabsList>
           <TabsTrigger value="review">Review</TabsTrigger>
-          <TabsTrigger value="downloads">Downloads</TabsTrigger>
           {job.has_tex && (
             <TabsTrigger value="source">LaTeX Source</TabsTrigger>
           )}
           {job.has_mathematica && (
-            <TabsTrigger value="mathematica">Mathematica Source</TabsTrigger>
+            <TabsTrigger value="mathematica">Mathematica Code</TabsTrigger>
           )}
+          <TabsTrigger value="downloads">Downloads</TabsTrigger>
         </TabsList>
 
         <TabsContent value="review">
           <ReviewTab jobId={job.job_id} />
         </TabsContent>
+
+        {job.has_tex && (
+          <TabsContent value="source">
+            <Card>
+              <CardContent className="py-4">
+                <LatexSourceView
+                  texSource={texSource}
+                  texLoading={texLoading}
+                />
+              </CardContent>
+            </Card>
+          </TabsContent>
+        )}
+
+        {job.has_mathematica && (
+          <TabsContent value="mathematica">
+            <Card>
+              <CardContent className="py-4">
+                <PlainSourceView
+                  source={mathematicaSource}
+                  loading={mathematicaLoading}
+                />
+              </CardContent>
+            </Card>
+          </TabsContent>
+        )}
 
         <TabsContent value="downloads">
           <Card>
@@ -608,32 +634,6 @@ function ResultView({ job }: { job: JobResponse }) {
             </CardContent>
           </Card>
         </TabsContent>
-
-        {job.has_tex && (
-          <TabsContent value="source">
-            <Card>
-              <CardContent className="py-4">
-                <LatexSourceView
-                  texSource={texSource}
-                  texLoading={texLoading}
-                />
-              </CardContent>
-            </Card>
-          </TabsContent>
-        )}
-
-        {job.has_mathematica && (
-          <TabsContent value="mathematica">
-            <Card>
-              <CardContent className="py-4">
-                <PlainSourceView
-                  source={mathematicaSource}
-                  loading={mathematicaLoading}
-                />
-              </CardContent>
-            </Card>
-          </TabsContent>
-        )}
       </Tabs>
 
       <Button asChild className="w-full">
