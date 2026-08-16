@@ -141,7 +141,7 @@ export function HomePage() {
           <CardTitle>Convert Notes</CardTitle>
           <CardDescription>
             Upload a PDF or images of your handwritten notes to convert them to
-            LaTeX.
+            LaTeX, PDF, and Mathematica code.
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
@@ -207,7 +207,7 @@ export function HomePage() {
                 Starting conversion...
               </>
             ) : (
-              "Convert to LaTeX"
+              "Convert to LaTeX + Mathematica"
             )}
           </Button>
         </CardContent>

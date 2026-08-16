@@ -15,6 +15,7 @@ from agent.utils.text import strip_code_fences
 from clients.llm.client import acompletion
 from compiler.compiler import compile_latex
 from core.logger import get_logger
+from document.mathematica import latex_body_to_mathematica
 from document.preprocessing import load_pages
 from document.processing import assemble_document, open_environments, strip_preamble_from_body
 
@@ -141,6 +142,7 @@ async def preprocess_node(state: PipelineState) -> dict:
         "errors": [],
         "output_tex_path": "",
         "output_pdf_path": "",
+        "output_mathematica_path": "",
     }
 
 
@@ -325,6 +327,13 @@ async def finalize_node(state: PipelineState) -> dict:
     tex_path = output_dir / "output.tex"
     tex_path.write_text(full_doc, encoding="utf-8")
 
+    # Post-process the LaTeX body into Mathematica source
+    mathematica_path = output_dir / "output.wl"
+    mathematica_path.write_text(
+        latex_body_to_mathematica(state["accumulated_body"]),
+        encoding="utf-8",
+    )
+
     # One final compilation to get the PDF in the output dir
     result = await asyncio.to_thread(
         compile_latex,
@@ -350,6 +359,7 @@ async def finalize_node(state: PipelineState) -> dict:
     return {
         "output_tex_path": str(tex_path),
         "output_pdf_path": output_pdf,
+        "output_mathematica_path": str(mathematica_path),
     }
 
 
@@ -464,6 +474,7 @@ async def run_pipeline(
         "errors": [],
         "output_tex_path": "",
         "output_pdf_path": "",
+        "output_mathematica_path": "",
     }
 
     try:
@@ -485,6 +496,7 @@ async def run_pipeline(
             extra={
                 "output_tex_path": final_state.get("output_tex_path", ""),
                 "output_pdf_path": final_state.get("output_pdf_path", ""),
+                "output_mathematica_path": final_state.get("output_mathematica_path", ""),
             },
         )
     )

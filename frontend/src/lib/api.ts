@@ -45,10 +45,26 @@ export async function getJob(jobId: string): Promise<JobResponse> {
   return res.json();
 }
 
-export async function fetchTexSource(jobId: string): Promise<string> {
-  const res = await fetch(`${API_BASE}/jobs/${jobId}/download/output.tex`);
-  if (!res.ok) throw new Error("Failed to fetch .tex source");
+async function fetchOutputText(
+  jobId: string,
+  filename: string,
+  errorMessage: string,
+): Promise<string> {
+  const res = await fetch(`${API_BASE}/jobs/${jobId}/download/${filename}`);
+  if (!res.ok) throw new Error(errorMessage);
   return res.text();
+}
+
+export async function fetchTexSource(jobId: string): Promise<string> {
+  return fetchOutputText(jobId, "output.tex", "Failed to fetch .tex source");
+}
+
+export async function fetchMathematicaSource(jobId: string): Promise<string> {
+  return fetchOutputText(
+    jobId,
+    "output.wl",
+    "Failed to fetch Mathematica source",
+  );
 }
 
 export async function getJobPages(jobId: string): Promise<PagesResponse> {

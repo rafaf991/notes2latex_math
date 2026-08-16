@@ -25,6 +25,7 @@ import {
   subscribeToJob,
   getJob,
   fetchTexSource,
+  fetchMathematicaSource,
   downloadUrl,
   getJobPages,
   getPageLatex,
@@ -423,9 +424,56 @@ function LatexSourceView({
   );
 }
 
+function PlainSourceView({
+  source,
+  loading,
+}: {
+  source: string | null;
+  loading: boolean;
+}) {
+  const { copied, copy } = useCopyToClipboard();
+
+  if (loading) {
+    return <p className="text-sm text-muted-foreground">Loading...</p>;
+  }
+
+  return (
+    <div className="space-y-3">
+      <div className="flex justify-end">
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => source && copy(source)}
+          disabled={!source}
+        >
+          {copied ? (
+            <>
+              <Check className="mr-2 h-3 w-3" />
+              Copied
+            </>
+          ) : (
+            <>
+              <Copy className="mr-2 h-3 w-3" />
+              Copy
+            </>
+          )}
+        </Button>
+      </div>
+
+      <pre className="text-xs bg-muted rounded-md p-4 overflow-auto max-h-[60vh] whitespace-pre-wrap">
+        {source}
+      </pre>
+    </div>
+  );
+}
+
 function ResultView({ job }: { job: JobResponse }) {
   const [texSource, setTexSource] = useState<string | null>(null);
   const [texLoading, setTexLoading] = useState(false);
+  const [mathematicaSource, setMathematicaSource] = useState<string | null>(
+    null,
+  );
+  const [mathematicaLoading, setMathematicaLoading] = useState(false);
 
   const loadTex = useCallback(() => {
     if (texSource !== null || texLoading || !job.has_tex) return;
@@ -435,6 +483,26 @@ function ResultView({ job }: { job: JobResponse }) {
       .catch(() => setTexSource("Failed to load source."))
       .finally(() => setTexLoading(false));
   }, [job.job_id, job.has_tex, texSource, texLoading]);
+
+  const loadMathematica = useCallback(() => {
+    if (
+      mathematicaSource !== null ||
+      mathematicaLoading ||
+      !job.has_mathematica
+    ) {
+      return;
+    }
+    setMathematicaLoading(true);
+    fetchMathematicaSource(job.job_id)
+      .then(setMathematicaSource)
+      .catch(() => setMathematicaSource("Failed to load source."))
+      .finally(() => setMathematicaLoading(false));
+  }, [
+    job.job_id,
+    job.has_mathematica,
+    mathematicaSource,
+    mathematicaLoading,
+  ]);
 
   return (
     <div className="space-y-6">
@@ -463,11 +531,12 @@ function ResultView({ job }: { job: JobResponse }) {
         </Card>
       )}
 
-      {/* Tabs: Review / Downloads / LaTeX Source */}
+      {/* Tabs: Review / Downloads / Source files */}
       <Tabs
         defaultValue="review"
         onValueChange={(v) => {
           if (v === "source") loadTex();
+          if (v === "mathematica") loadMathematica();
         }}
       >
         <TabsList>
@@ -475,6 +544,9 @@ function ResultView({ job }: { job: JobResponse }) {
           <TabsTrigger value="downloads">Downloads</TabsTrigger>
           {job.has_tex && (
             <TabsTrigger value="source">LaTeX Source</TabsTrigger>
+          )}
+          {job.has_mathematica && (
+            <TabsTrigger value="mathematica">Mathematica Source</TabsTrigger>
           )}
         </TabsList>
 
@@ -510,6 +582,18 @@ function ResultView({ job }: { job: JobResponse }) {
                     </Button>
                   </a>
                 )}
+                {job.has_mathematica && (
+                  <a href={downloadUrl(job.job_id, "output.wl", true)}>
+                    <Button
+                      variant="outline"
+                      className="w-full justify-start gap-2"
+                    >
+                      <FileText className="h-4 w-4" />
+                      Download Mathematica (.wl)
+                      <Download className="h-4 w-4 ml-auto" />
+                    </Button>
+                  </a>
+                )}
                 <a href={downloadUrl(job.job_id, "all.zip", true)}>
                   <Button
                     variant="outline"
@@ -532,6 +616,19 @@ function ResultView({ job }: { job: JobResponse }) {
                 <LatexSourceView
                   texSource={texSource}
                   texLoading={texLoading}
+                />
+              </CardContent>
+            </Card>
+          </TabsContent>
+        )}
+
+        {job.has_mathematica && (
+          <TabsContent value="mathematica">
+            <Card>
+              <CardContent className="py-4">
+                <PlainSourceView
+                  source={mathematicaSource}
+                  loading={mathematicaLoading}
                 />
               </CardContent>
             </Card>

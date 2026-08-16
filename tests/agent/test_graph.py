@@ -8,6 +8,7 @@ from agent.config import AgentConfig
 from agent.graph import route_after_advance, route_after_compile, run_pipeline
 from agent.state import PipelineState
 from compiler.compiler import CompilerResult
+from document.mathematica import latex_body_to_mathematica
 from document.processing import assemble_document, open_environments
 
 # Default preamble loaded from prompts/preamble.tex
@@ -159,3 +160,10 @@ class TestPipelineEndToEnd:
         mock_transcribe.assert_called_once()
         # compile is called in compile_latex_node + finalize_node = 2 times
         assert mock_compile.call_count == 2
+
+        mathematica_path = tmp_path / "output" / "output.wl"
+        assert mathematica_path.exists()
+        assert mathematica_path.read_text(encoding="utf-8") == latex_body_to_mathematica(
+            result["accumulated_body"]
+        )
+        assert result["output_mathematica_path"] == str(mathematica_path)

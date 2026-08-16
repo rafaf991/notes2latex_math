@@ -132,6 +132,7 @@ async def create_job(
         model=job.model,
         created_at=job.created_at,
         input_filenames=filenames,
+        has_mathematica=False,
     )
 
 
@@ -182,6 +183,7 @@ async def _handle_db_event(job_id: str, event: ProgressEvent, output_dir: Path) 
 
 def _build_job_response(job) -> JobResponse:
     """Convert a DB Job row into an API response."""
+    output_dir = _get_job_dir(job.id) / "output"
     return JobResponse(
         job_id=job.id,
         status=job.status,
@@ -191,8 +193,9 @@ def _build_job_response(job) -> JobResponse:
         completed_at=job.completed_at,
         error_message=job.error_message,
         input_filenames=json.loads(job.input_filenames),
-        has_pdf=job.has_pdf,
-        has_tex=job.has_tex,
+        has_pdf=job.has_pdf or (output_dir / "output.pdf").exists(),
+        has_tex=job.has_tex or (output_dir / "output.tex").exists(),
+        has_mathematica=(output_dir / "output.wl").exists(),
     )
 
 
@@ -306,6 +309,7 @@ async def download_file(
 
     media_types = {
         ".tex": "text/plain",
+        ".wl": "text/plain",
         ".pdf": "application/pdf",
         ".log": "text/plain",
     }

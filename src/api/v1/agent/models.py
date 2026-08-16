@@ -36,6 +36,7 @@ class JobResponse(BaseModel):
     input_filenames: list[str] = []
     has_pdf: bool = False
     has_tex: bool = False
+    has_mathematica: bool = False
 
 
 class PageLatexResponse(BaseModel):

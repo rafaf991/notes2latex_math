@@ -82,6 +82,9 @@ def convert(
             "LaTeX source was saved but no PDF was produced."
         )
 
+    if result.get("output_mathematica_path"):
+        console.print(f"[bold green]Mathematica:[/] {result['output_mathematica_path']}")
+
 
 @app.command()
 def serve(

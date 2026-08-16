@@ -12,9 +12,9 @@
     <a href="#local-development">Local Development</a>
   </p>
   <p align="center">
-    <a href="https://github.com/advaypakhale/notes2latex/actions/workflows/ci.yml"><img src="https://github.com/advaypakhale/notes2latex/actions/workflows/ci.yml/badge.svg" alt="CI"></a>
-    <a href="https://github.com/advaypakhale/notes2latex/pkgs/container/notes2latex"><img src="https://ghcr-badge.egpl.dev/advaypakhale/notes2latex/latest_tag?trim=major&label=image" alt="Docker Image"></a>
-    <a href="https://github.com/advaypakhale/notes2latex/blob/main/LICENSE"><img src="https://img.shields.io/github/license/advaypakhale/notes2latex" alt="License"></a>
+    <a href="https://github.com/rafaf991/notes2latex_math/actions/workflows/ci.yml"><img src="https://github.com/rafaf991/notes2latex_math/actions/workflows/ci.yml/badge.svg" alt="CI"></a>
+    <a href="https://github.com/rafaf991/notes2latex_math/pkgs/container/notes2latex_math"><img src="https://ghcr-badge.egpl.dev/rafaf991/notes2latex_math/latest_tag?trim=major&label=image" alt="Docker Image"></a>
+    <a href="https://github.com/rafaf991/notes2latex_math/blob/main/LICENSE"><img src="https://img.shields.io/github/license/rafaf991/notes2latex_math" alt="License"></a>
   </p>
 </p>
 
@@ -32,7 +32,7 @@ Create a `docker-compose.yml`:
 ```yaml
 services:
   notes2latex:
-    image: ghcr.io/advaypakhale/notes2latex:latest
+    image: ghcr.io/rafaf991/notes2latex_math:latest
     ports:
       - "8000:8000"
     env_file:

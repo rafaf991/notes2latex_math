@@ -24,6 +24,7 @@ class PipelineState(TypedDict, total=False):
     errors: Annotated[list[dict], _use_latest]
     output_tex_path: Annotated[str, _use_latest]
     output_pdf_path: Annotated[str, _use_latest]
+    output_mathematica_path: Annotated[str, _use_latest]
 
 
 def get_config(state: PipelineState) -> AgentConfig:

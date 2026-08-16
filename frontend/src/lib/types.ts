@@ -44,4 +44,5 @@ export interface JobResponse {
   input_filenames: string[];
   has_pdf: boolean;
   has_tex: boolean;
+  has_mathematica: boolean;
 }
